@@ -1,0 +1,37 @@
+project(IPCOnvif)
+cmake_minimum_required(VERSION 3.8)
+
+
+SET(TOOLCHAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../buildroot/output/rockchip_rv1126_sany_videobox")
+set(C_COMPILER "${TOOLCHAIN_DIR}/host/usr/bin/arm-linux-gnueabihf-gcc")
+set(CXX_COMPILER "${TOOLCHAIN_DIR}/host/usr/bin/arm-linux-gnueabihf-g++")
+set(SYS_ROOT "${TOOLCHAIN_DIR}/host/arm-buildroot-linux-gnueabihf/sysroot")
+
+SET(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_C_COMPILER ${C_COMPILER})
+set(CMAKE_CXX_COMPILER ${CXX_COMPILER})
+SET(CMAKE_FIND_ROOT_PATH ${SYS_ROOT})
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 11)
+
+############################################
+message("PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR})
+aux_source_directory(src DIR_SRCS)
+aux_source_directory(example DIR_SRCS)
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+add_executable(IPCOnvif ${DIR_SRCS})
+
+set(FFMPEG_PREFIX_PATH "${TOOLCHAIN_DIR}/host/arm-buildroot-linux-gnueabihf/sysroot/usr")
+target_include_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_PREFIX_PATH}/include/)
+target_link_directories(${PROJECT_NAME} PUBLIC ${FFMPEG_PREFIX_PATH}/lib/)
+
+target_link_libraries(${PROJECT_NAME}
+        crypto
+        ssl
+        pthread dl avformat avdevice avfilter avcodec avutil swresample swscale
+    )
+
+add_definitions(-DWITH_NONAMESPACES -DWITH_DOM -DWITH_OPENSSL)
+

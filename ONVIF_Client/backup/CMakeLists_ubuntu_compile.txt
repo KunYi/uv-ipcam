@@ -1,0 +1,30 @@
+project(IPCOnvif)
+cmake_minimum_required(VERSION 2.8)
+
+SET(CMAKE_SYSTEM_NAME Linux)
+
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-use-cxa-atexit -fexceptions" )
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 11)
+
+############################################
+aux_source_directory(src DIR_SRCS)
+aux_source_directory(example DIR_SRCS)
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+add_executable(IPCOnvif ${DIR_SRCS})
+
+set(INC_DIR /usr/local/ffmpeg/include)
+set(LINK_DIR /usr/local/ffmpeg/lib)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${INC_DIR})
+target_link_directories(${PROJECT_NAME} PUBLIC ${LINK_DIR})
+
+target_link_libraries(${PROJECT_NAME}
+    crypto
+    ssl
+    avformat avdevice avfilter avcodec avutil swresample
+)
+
+add_definitions(-DWITH_NONAMESPACES -DWITH_DOM -DWITH_OPENSSL)
